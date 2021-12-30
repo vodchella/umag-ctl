@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 
 import asyncio
-from pkg.completers import umag_ctl_completer
-from pkg.lexers import umag_ctl_lexer
-from pkg.processors import process_text
-from pkg.styles import umag_ctl_style
+from pkg.completer import umag_ctl_completer
+from pkg.lexer import umag_ctl_lexer
+from pkg.processor import parse_and_execute
+from pkg.style import umag_ctl_style
 from pkg.utils import check_python_version
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
-from prompt_toolkit.formatted_text import HTML
 from prompt_toolkit.patch_stdout import patch_stdout
 from prompt_toolkit.shortcuts import PromptSession
+
+from pkg.widgets import umag_ctl_prompt, umag_ctl_bottom_toolbar, umag_ctl_placeholder
 
 
 async def background_worker():
@@ -20,28 +21,13 @@ async def background_worker():
         pass
 
 
-def get_prompt() -> HTML:
-    return HTML(f'<prompt-server-name>MAIN</prompt-server-name>> ')
-
-
-def get_bottom_toolbar() -> HTML:
-    return HTML(
-        'Services: <bottom-toolbar-service> <i>jboss</i> is <b>ON</b> </bottom-toolbar-service> ' +
-        '<bottom-toolbar-service> <i>jboss2</i> is <b>OFF</b> </bottom-toolbar-service>'
-    )
-
-
-def get_placeholder() -> HTML:
-    return HTML('<prompt-placeholder>enter command here</prompt-placeholder>')
-
-
 async def interactive_shell():
     session = PromptSession(
-        get_prompt,
-        bottom_toolbar=get_bottom_toolbar,
+        umag_ctl_prompt,
+        bottom_toolbar=umag_ctl_bottom_toolbar,
         completer=umag_ctl_completer,
         auto_suggest=AutoSuggestFromHistory(),
-        placeholder=get_placeholder,
+        placeholder=umag_ctl_placeholder,
         lexer=umag_ctl_lexer,
         style=umag_ctl_style,
         refresh_interval=1
@@ -50,7 +36,7 @@ async def interactive_shell():
     while True:
         try:
             text = await session.prompt_async()
-            if process_text(text) != 0:
+            if parse_and_execute(text) != 0:
                 return
         except (EOFError, KeyboardInterrupt):
             return
@@ -67,6 +53,5 @@ async def main():
 
 
 if __name__ == '__main__':
-    process_text('ping main')
     check_python_version()
     asyncio.run(main())
