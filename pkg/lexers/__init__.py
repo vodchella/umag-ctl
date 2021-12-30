@@ -4,7 +4,7 @@ from pygments.token import Keyword, Error, Operator, Number
 
 
 class UmagCtlLexerBase(RegexLexer):
-    simple_commands = ['exit', 'help', 'down', 'up', 'reserve', 'status']
+    simple_commands = ['exit', 'quit', 'help', 'down', 'up', 'reserve', 'status']
     tokens = {
         'root': [
             (words(simple_commands), Keyword),

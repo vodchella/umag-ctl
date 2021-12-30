@@ -3,6 +3,7 @@
 import asyncio
 from pkg.completers import umag_ctl_completer
 from pkg.lexers import umag_ctl_lexer
+from pkg.processors import process_text
 from pkg.styles import umag_ctl_style
 from pkg.utils import check_python_version
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
@@ -16,7 +17,7 @@ async def background_worker():
         while True:
             await asyncio.sleep(3)
     except asyncio.CancelledError:
-        print('Background task cancelled.')
+        pass
 
 
 def get_prompt() -> HTML:
@@ -48,8 +49,9 @@ async def interactive_shell():
 
     while True:
         try:
-            result = await session.prompt_async()
-            print(f'You said: {result}')
+            text = await session.prompt_async()
+            if process_text(text) != 0:
+                return
         except (EOFError, KeyboardInterrupt):
             return
 
@@ -61,9 +63,10 @@ async def main():
             await interactive_shell()
         finally:
             bg_task.cancel()
-        print('Quitting event loop. Bye.')
+        print('Bye!')
 
 
 if __name__ == '__main__':
+    process_text('ping main')
     check_python_version()
     asyncio.run(main())

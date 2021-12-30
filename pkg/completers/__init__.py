@@ -6,6 +6,7 @@ umag_ctl_completer = FuzzyCompleter(NestedCompleter.from_nested_dict({
         'reserve': None,
     },
     'exit': None,
+    'quit': None,
     'help': None,
     'down': None,
     'up': None,
