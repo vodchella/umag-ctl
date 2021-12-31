@@ -1,6 +1,6 @@
 from pkg.utils.console import write_stdout
 from pkg.utils.decorators import no_args, optional_int_arg
-from pkg.utils.jboss import jboss_direct_ping
+from pkg.utils.umag import jboss_direct_ping
 
 
 @no_args

@@ -1,10 +1,24 @@
 from prompt_toolkit import HTML
 
 from pkg.utils.console import shell_execute
+from pkg.utils.umag import nginx_get_status_code
 
 
 def umag_ctl_prompt() -> HTML:
-    return HTML(f'<prompt-server-name>MAIN</prompt-server-name>> ')
+    status = nginx_get_status_code()
+    tag = 'prompt-server-name'
+    if status == '200':
+        server = 'MAIN'
+    elif status == '200 res':
+        server = 'RESERVE'
+    elif status == '499':
+        server = 'UPDATING'
+        tag = 'prompt-server-name-updating'
+    else:
+        server = 'UNAVAILABLE'
+        tag = 'prompt-server-name-unavailable'
+
+    return HTML(f'<{tag}>{server}</{tag}>> ')
 
 
 def umag_ctl_bottom_toolbar() -> HTML:
