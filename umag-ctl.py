@@ -30,7 +30,6 @@ async def interactive_shell():
         placeholder=umag_ctl_placeholder,
         lexer=umag_ctl_lexer,
         style=umag_ctl_style,
-        refresh_interval=1
     )
 
     while True:

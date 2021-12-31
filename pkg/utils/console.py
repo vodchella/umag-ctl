@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 from pkg.utils.errors import get_raised_error
 
@@ -21,3 +22,7 @@ def panic(msg: str = None, show_original_error: bool = False):
     write_stderr(f'{msg}\n')
     # noinspection PyProtectedMember
     os._exit(1)
+
+
+def shell_execute(command: str) -> str:
+    return subprocess.getoutput(command)
