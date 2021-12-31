@@ -1,4 +1,6 @@
+from pkg.utils.console import write_stdout
 from pkg.utils.decorators import no_args, optional_int_arg
+from pkg.utils.jboss import jboss_direct_ping
 
 
 @no_args
@@ -19,15 +21,23 @@ def cmd_help():
     return 0
 
 
+def ping(server: str, times: int):
+    print(f'Ping {server.upper()} {times} times:')
+    port = 8080 if server == 'main' else 8081
+    for i in range(times):
+        write_stdout('+' if jboss_direct_ping(port) else 'F')
+    print('\n')
+
+
 @optional_int_arg
 def cmd_ping_main(times: int = 100):
-    print(f'Ping main {times}')
+    ping('main', times)
     return 0
 
 
 @optional_int_arg
 def cmd_ping_reserve(times: int = 100):
-    print(f'Ping reserve {times}')
+    ping('reserve', times)
     return 0
 
 
