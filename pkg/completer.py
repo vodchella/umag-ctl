@@ -17,6 +17,7 @@ completer = FuzzyCompleter(NestedCompleter.from_nested_dict({
     'exit': None,
     'quit': None,
     'help': None,
+    'usage': None,
     'down': None,
     'up': None,
     'reserve': None,

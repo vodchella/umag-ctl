@@ -1,6 +1,8 @@
+from pkg.style import style
 from pkg.utils.console import write_stdout, shell_execute, write_stderr
 from pkg.utils.decorators import no_args, two_args, optional_int_arg
 from pkg.utils.umag import jboss_direct_ping, nginx_get_jboss_proxy, nginx_get_state
+from prompt_toolkit import print_formatted_text, HTML
 
 
 command_usage = {
@@ -17,13 +19,19 @@ def cmd_exit():
 @no_args
 def cmd_help():
     print("""Usage:
-    'down'   - switch into \"UPDATING\" state
-    'up'     - switch proxy to -> JBOSS1 (Main)
-    'reserve'- switch proxy to -> JBOSS2 (Reserve)
-    'status' - prints status
-    'ping'   - performing N ping requests, directly into {main|reserve} jboss, bypassing nginx
-    'help, exit, quit'
+    'down'        - switch into \"UPDATING\" state
+    'up'          - switch proxy to -> JBOSS1 (Main)
+    'reserve'     - switch proxy to -> JBOSS2 (Reserve)
+    'status'      - prints status
+    'ping'        - performing N ping requests, directly into jboss, bypassing nginx
+    'service'     - start or stop jboss services
+    'help, usage' - show this help
+    'exit, quit'  - exit program
     """)
+    print_formatted_text(
+        HTML('In case of any errors use <prompt-server-name>umag-ctl-old</prompt-server-name> command\n'),
+        style=style
+    )
     return 0
 
 

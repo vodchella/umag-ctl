@@ -21,6 +21,7 @@ functions = {
     'exit': cmd_exit,
     'quit': cmd_exit,
     'help': cmd_help,
+    'usage': cmd_help,
     'down': cmd_down,
     'up': cmd_up,
     'reserve': cmd_reserve,
