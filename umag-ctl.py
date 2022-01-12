@@ -31,6 +31,7 @@ async def interactive_shell():
             text = await session.prompt_async()
             if parse_and_execute(text) != 0:
                 return
+            print()
         except (EOFError, KeyboardInterrupt):
             return
 

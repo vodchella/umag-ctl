@@ -13,4 +13,5 @@ style = Style.from_dict({
     'pygments.keyword': '#164fbb',
     'pygments.operator.word': '#1c92de',
     'pygments.error': NAMED_COLORS['Red'],
+    'pygments.literal.string': NAMED_COLORS['ForestGreen'],
 })

@@ -1,6 +1,12 @@
-from pkg.utils.console import write_stdout
-from pkg.utils.decorators import no_args, optional_int_arg
+from pkg.utils.console import write_stdout, shell_execute, write_stderr
+from pkg.utils.decorators import no_args, two_args, optional_int_arg
 from pkg.utils.umag import jboss_direct_ping, nginx_get_jboss_proxy, nginx_get_state
+
+
+command_usage = {
+    'ping': 'ping {main|reserve} [number_of_times]',
+    'service': 'service {jboss|jboss2} {start|stop}',
+}
 
 
 @no_args
@@ -26,7 +32,7 @@ def ping(server: str, times: int):
     port = 8080 if server == 'main' else 8081
     for i in range(times):
         write_stdout('+' if jboss_direct_ping(port) else 'F')
-    print('\n')
+    print()
 
 
 @optional_int_arg
@@ -38,6 +44,17 @@ def cmd_ping_main(times: int = 100):
 @optional_int_arg
 def cmd_ping_reserve(times: int = 100):
     ping('reserve', times)
+    return 0
+
+
+@two_args
+def cmd_service(service: str, action: str):
+    svc = service.strip().lower()
+    act = action.strip().lower()
+    if svc not in ['jboss', 'jboss2'] or act not in ['start', 'stop']:
+        print(f'Usage: {command_usage["service"]}')
+    elif result := shell_execute(f'service {svc} {act}'):
+        write_stderr(f'{result}\n')
     return 0
 
 

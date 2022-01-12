@@ -6,7 +6,9 @@ from pkg.commands import (
     cmd_down,
     cmd_up,
     cmd_reserve,
-    cmd_status
+    cmd_status,
+    cmd_service,
+    command_usage,
 )
 from pkg.utils.console import write_stderr
 
@@ -15,6 +17,7 @@ functions = {
         'main': cmd_ping_main,
         'reserve': cmd_ping_reserve,
     },
+    'service': cmd_service,
     'exit': cmd_exit,
     'quit': cmd_exit,
     'help': cmd_help,
@@ -22,10 +25,6 @@ functions = {
     'up': cmd_up,
     'reserve': cmd_reserve,
     'status': cmd_status,
-}
-
-command_usage = {
-    'ping': 'ping {main|reserve} [number_of_times]'
 }
 
 
