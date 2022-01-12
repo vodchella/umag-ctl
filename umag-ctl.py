@@ -2,7 +2,7 @@
 
 import asyncio
 
-from pkg.commands import cmd_help
+from pkg.commands import cmd_help, cmd_status
 from pkg.completer import completer
 from pkg.lexer import lexer
 from pkg.processor import parse_and_execute
@@ -15,6 +15,8 @@ from prompt_toolkit.shortcuts import PromptSession
 
 async def interactive_shell():
     cmd_help()
+    cmd_status()
+    print()
 
     session = PromptSession(
         prompt,
