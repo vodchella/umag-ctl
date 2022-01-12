@@ -1,6 +1,6 @@
 from prompt_toolkit.completion import FuzzyCompleter, NestedCompleter
 
-umag_ctl_completer = FuzzyCompleter(NestedCompleter.from_nested_dict({
+completer = FuzzyCompleter(NestedCompleter.from_nested_dict({
     'ping': {
         'main': None,
         'reserve': None,

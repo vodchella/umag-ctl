@@ -1,12 +1,20 @@
 import os
 import subprocess
 import sys
+
+from pkg.style import style
 from pkg.utils.errors import get_raised_error
+from prompt_toolkit import HTML, print_formatted_text
 
 
 def write_stderr(line: str):
-    sys.stderr.write(line)
-    sys.stderr.flush()
+    print_formatted_text(
+        HTML(f'<error-text>{line}</error-text>'),
+        flush=True,
+        file=sys.stderr,
+        end='',
+        style=style
+    )
 
 
 def write_stdout(line: str):

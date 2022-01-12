@@ -8,6 +8,7 @@ from pkg.commands import (
     cmd_reserve,
     cmd_status
 )
+from pkg.utils.console import write_stderr
 
 functions = {
     'ping': {
@@ -42,7 +43,7 @@ def parse_and_execute(text: str) -> int:
         if usage := command_usage[command] if command in command_usage else None:
             print(f'Usage: {usage}')
         else:
-            print('Unknown command')
+            write_stderr('Unknown command\n')
         return 0
 
     words = text.lower().split()

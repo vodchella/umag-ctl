@@ -20,4 +20,4 @@ class UmagCtlLexerBase(RegexLexer):
     }
 
 
-umag_ctl_lexer = PygmentsLexer(UmagCtlLexerBase)
+lexer = PygmentsLexer(UmagCtlLexerBase)

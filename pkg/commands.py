@@ -1,6 +1,6 @@
 from pkg.utils.console import write_stdout
 from pkg.utils.decorators import no_args, optional_int_arg
-from pkg.utils.umag import jboss_direct_ping
+from pkg.utils.umag import jboss_direct_ping, nginx_get_jboss_proxy, nginx_get_state
 
 
 @no_args
@@ -61,5 +61,12 @@ def cmd_reserve():
 
 @no_args
 def cmd_status():
-    print('Status')
+    proxy = nginx_get_jboss_proxy()
+    nginx_state = nginx_get_state()
+    if proxy and nginx_state:
+        jboss = 'JBOSS1 (Main)' if proxy == 'ON' else 'JBOSS2 (Reserve)'
+        jboss_proxy = f'[{proxy} -> {jboss}]'
+        print('Current status:')
+        print(f'    * nginx\'s jboss-proxy: {jboss_proxy}')
+        print(f'    * http-check: [{nginx_state}]')
     return 0

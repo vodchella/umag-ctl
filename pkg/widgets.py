@@ -1,10 +1,9 @@
-from prompt_toolkit import HTML
-
 from pkg.utils.console import shell_execute
 from pkg.utils.umag import nginx_get_status_code
+from prompt_toolkit import HTML
 
 
-def umag_ctl_prompt() -> HTML:
+def prompt() -> HTML:
     status = nginx_get_status_code()
     tag = 'prompt-server-name'
     if status == '200':
@@ -21,7 +20,7 @@ def umag_ctl_prompt() -> HTML:
     return HTML(f'<{tag}>{server}</{tag}>> ')
 
 
-def umag_ctl_bottom_toolbar() -> HTML:
+def bottom_toolbar() -> HTML:
     def status_from_result(result: str) -> str:
         prepared = result.strip().lower()
         if prepared.startswith('active: active'):
@@ -41,5 +40,9 @@ def umag_ctl_bottom_toolbar() -> HTML:
     )
 
 
-def umag_ctl_placeholder() -> HTML:
+def placeholder() -> HTML:
     return HTML('<prompt-placeholder>enter command here</prompt-placeholder>')
+
+
+def error_text(text: str) -> HTML:
+    return HTML(f'<error-text>{text}</error-text>')

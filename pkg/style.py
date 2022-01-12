@@ -1,7 +1,8 @@
 from prompt_toolkit.styles import Style
 from prompt_toolkit.styles.named_colors import NAMED_COLORS
 
-umag_ctl_style = Style.from_dict({
+style = Style.from_dict({
+    'error-text': NAMED_COLORS['Red'],
     'bottom-toolbar': '#444444 bg:#ff0000',
     'bottom-toolbar.text': '#444444 bg:#aaaaaa',
     'bottom-toolbar-service': '#666666 bg:#aaaaaa',
