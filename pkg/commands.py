@@ -1,7 +1,7 @@
 from pkg.style import style
 from pkg.utils.console import write_stdout, shell_execute, write_stderr
 from pkg.utils.decorators import no_args, two_args, optional_int_arg
-from pkg.utils.umag import jboss_direct_ping, nginx_get_jboss_proxy, nginx_get_state
+from pkg.utils.umag import jboss_direct_ping, nginx_get_jboss_proxy, nginx_get_state, nginx_set_jboss_proxy
 from prompt_toolkit import print_formatted_text, HTML
 
 
@@ -68,19 +68,19 @@ def cmd_service(service: str, action: str):
 
 @no_args
 def cmd_down():
-    print('Down')
+    nginx_set_jboss_proxy('UPDATING')
     return 0
 
 
 @no_args
 def cmd_up():
-    print('Up')
+    nginx_set_jboss_proxy('ON')
     return 0
 
 
 @no_args
 def cmd_reserve():
-    print('Reserve')
+    nginx_set_jboss_proxy('RESERVE')
     return 0
 
 

@@ -39,7 +39,7 @@ async def interactive_shell():
 async def main():
     # with patch_stdout():
     await interactive_shell()
-    print('Bye!')
+    print('Bye!\n')
 
 
 if __name__ == '__main__':

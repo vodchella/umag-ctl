@@ -2,7 +2,7 @@ from prompt_toolkit.styles import Style
 from prompt_toolkit.styles.named_colors import NAMED_COLORS
 
 style = Style.from_dict({
-    'error-text': NAMED_COLORS['Red'],
+    'error-text': NAMED_COLORS['IndianRed'] + ' bold',
     'bottom-toolbar': '#444444 bg:#ff0000',
     'bottom-toolbar.text': '#444444 bg:#aaaaaa',
     'bottom-toolbar-service': '#666666 bg:#aaaaaa',

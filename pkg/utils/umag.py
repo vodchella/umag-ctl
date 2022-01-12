@@ -1,6 +1,9 @@
 import os
 
-from pkg.utils.console import shell_execute, write_stderr
+from pkg.style import style
+from pkg.utils.console import shell_execute, write_stderr, write_stdout
+from prompt_toolkit import print_formatted_text, HTML
+from time import sleep, time
 from typing import Optional
 
 
@@ -37,3 +40,41 @@ def nginx_get_jboss_proxy() -> Optional[str]:
     except FileNotFoundError:
         pass
     write_stderr('File /etc/nginx/sites-available/_jboss.proxy must be symlink to _jboss.proxy.*\n')
+
+
+def nginx_set_jboss_proxy(proxy: str):
+    if proxy in ['ON', 'RESERVE', 'UPDATING']:
+        if current_proxy := nginx_get_jboss_proxy() is not None:
+            if proxy == current_proxy:
+                print(f'Already {proxy}')
+            else:
+                print(f'Nginx config: switching symlink to _jboss.proxy.{proxy}')
+                shell_execute(f'/bin/ln -sf _jboss.proxy.{proxy} /etc/nginx/sites-available/_jboss.proxy')
+                shell_execute('/usr/sbin/nginx -t 2>/dev/null && /usr/sbin/service nginx reload')
+
+                ok = False
+                restart_applied = False
+                start_time = time()
+                while int(time() - start_time) < 10:
+                    print('Waiting 0.5s')
+                    sleep(0.5)
+
+                    ok = nginx_get_state() == proxy
+                    tag = 'prompt-server-name' if ok else 'prompt-server-name-unavailable'
+                    status = 'OK' if ok else 'FAILED'
+                    print_formatted_text(
+                        HTML(f'Checking https://api.umag.kz/: {proxy} [<{tag}>{status}</{tag}>]'),
+                        style=style, flush=True
+                    )
+
+                    if ok:
+                        break
+
+                    if not restart_applied and int(time() - start_time) > 3:
+                        restart_applied = True
+                        write_stderr('\nRestarting nginx (reload didn\'t help after 3 sec)\n\n')
+                        shell_execute('/usr/sbin/nginx -t 2>/dev/null && /usr/sbin/service nginx restart')
+
+                if not ok:
+                    write_stderr('\nFAILED TO SWITCH NGINX CONFIG, ')
+                    write_stderr('GO AND FIX STATE MANUALLY, BACKEND COULD BE UNREACHABLE BY NOW!!!\n')
