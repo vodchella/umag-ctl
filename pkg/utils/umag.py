@@ -44,11 +44,11 @@ def nginx_get_jboss_proxy() -> Optional[str]:
 
 def nginx_set_jboss_proxy(proxy: str):
     if proxy in ['ON', 'RESERVE', 'UPDATING']:
-        if current_proxy := nginx_get_jboss_proxy() is not None:
+        if (current_proxy := nginx_get_jboss_proxy()) is not None:
+            print(f'Nginx config: switching symlink to _jboss.proxy.{proxy}...')
             if proxy == current_proxy:
-                print(f'Already {proxy}')
+                print(f'Already switched to _jboss.proxy.{proxy}')
             else:
-                print(f'Nginx config: switching symlink to _jboss.proxy.{proxy}')
                 shell_execute(f'/bin/ln -sf _jboss.proxy.{proxy} /etc/nginx/sites-available/_jboss.proxy')
                 shell_execute('/usr/sbin/nginx -t 2>/dev/null && /usr/sbin/service nginx reload')
 
