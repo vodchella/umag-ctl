@@ -42,7 +42,3 @@ def bottom_toolbar() -> HTML:
 
 def placeholder() -> HTML:
     return HTML('<prompt-placeholder>enter command here</prompt-placeholder>')
-
-
-def error_text(text: str) -> HTML:
-    return HTML(f'<error-text>{text}</error-text>')

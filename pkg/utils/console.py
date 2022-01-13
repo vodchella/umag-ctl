@@ -5,15 +5,13 @@ import sys
 from pkg.style import style
 from pkg.utils.errors import get_raised_error
 from prompt_toolkit import HTML, print_formatted_text
+from typing import Optional
 
 
 def write_stderr(line: str):
     print_formatted_text(
         HTML(f'<error-text>{line}</error-text>'),
-        flush=True,
-        file=sys.stderr,
-        end='',
-        style=style
+        flush=True, file=sys.stderr, end='', style=style
     )
 
 
@@ -32,5 +30,5 @@ def panic(msg: str = None, show_original_error: bool = False):
     os._exit(1)
 
 
-def shell_execute(command: str) -> str:
+def shell_execute(command: str) -> Optional[str]:
     return subprocess.getoutput(command)
