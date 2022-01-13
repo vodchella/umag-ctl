@@ -1,6 +1,7 @@
+from pkg.style import style
 from pkg.utils.console import shell_execute
 from pkg.utils.umag import nginx_get_status_code
-from prompt_toolkit import HTML
+from prompt_toolkit import HTML, PromptSession
 
 
 def prompt() -> HTML:
@@ -42,3 +43,11 @@ def bottom_toolbar() -> HTML:
 
 def placeholder() -> HTML:
     return HTML('<prompt-placeholder>enter command here</prompt-placeholder>')
+
+
+async def confirm_dialog() -> bool:
+    session = PromptSession('Are you sure [y/N]? ', bottom_toolbar=bottom_toolbar, style=style)
+    result = str(await session.prompt_async()).strip().lower() in ['y', 'yes']
+    if not result:
+        print('Cancelled')
+    return result

@@ -1,5 +1,4 @@
 import inspect
-from typing import Callable, Union, List
 
 from pkg.commands import (
     cmd_ping_main,
@@ -13,7 +12,9 @@ from pkg.commands import (
     cmd_service,
     command_usage,
 )
-from pkg.utils.console import write_stderr, confirm
+from pkg.utils.console import write_stderr
+from pkg.widgets import confirm_dialog
+from typing import Callable, Union, List
 
 functions = {
     'ping': {
@@ -36,7 +37,7 @@ functions = {
 
 async def parse_and_execute(text: str) -> int:
     async def call_fn(func: Callable, args: List[str]) -> int:
-        if hasattr(func, '_with_confirm') and not await confirm():
+        if hasattr(func, '_with_confirm') and not await confirm_dialog():
             return 0
         if inspect.iscoroutinefunction(func):
             return await func(args)

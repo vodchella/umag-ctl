@@ -32,10 +32,3 @@ def panic(msg: str = None, show_original_error: bool = False):
 
 def shell_execute(command: str) -> Optional[str]:
     return subprocess.getoutput(command)
-
-
-async def confirm() -> bool:
-    result = str(await PromptSession('Are you sure [y/N]? ').prompt_async()).strip().lower() in ['y', 'yes']
-    if not result:
-        print('Cancelled')
-    return result
