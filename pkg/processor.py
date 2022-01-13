@@ -25,6 +25,8 @@ functions = {
     'down': cmd_down,
     'up': cmd_up,
     'reserve': cmd_reserve,
+    's': cmd_status,
+    'st': cmd_status,
     'status': cmd_status,
 }
 

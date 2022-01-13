@@ -7,6 +7,7 @@ class UmagCtlLexerBase(RegexLexer):
     simple_commands = ['exit', 'quit', 'help', 'usage', 'down', 'up', 'reserve', 'status']
     tokens = {
         'root': [
+            ('^(s|st)$', Keyword),
             (words(simple_commands), Keyword),
             (words(['ping']), Keyword, 'ping'),
             (words(['service']), Keyword, 'service'),

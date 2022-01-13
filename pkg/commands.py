@@ -22,7 +22,7 @@ def cmd_help():
     'down'        - switch into \"UPDATING\" state
     'up'          - switch proxy to -> JBOSS1 (Main)
     'reserve'     - switch proxy to -> JBOSS2 (Reserve)
-    'status'      - prints status
+    'status'      - prints status ('s' or 'st' aliased)
     'ping'        - performing N ping requests, directly into jboss, bypassing nginx
     'service'     - start or stop jboss services
     'help, usage' - show this help
