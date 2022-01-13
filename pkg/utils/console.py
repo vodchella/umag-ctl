@@ -4,7 +4,7 @@ import sys
 
 from pkg.style import style
 from pkg.utils.errors import get_raised_error
-from prompt_toolkit import HTML, print_formatted_text
+from prompt_toolkit import HTML, print_formatted_text, PromptSession
 from typing import Optional
 
 
@@ -32,3 +32,10 @@ def panic(msg: str = None, show_original_error: bool = False):
 
 def shell_execute(command: str) -> Optional[str]:
     return subprocess.getoutput(command)
+
+
+async def confirm() -> bool:
+    result = str(await PromptSession('Are you sure [y/N]? ').prompt_async()).strip().lower() in ['y', 'yes']
+    if not result:
+        print('Cancelled')
+    return result

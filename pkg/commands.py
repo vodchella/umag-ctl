@@ -1,9 +1,8 @@
 from pkg.style import style
-from pkg.utils.console import write_stdout, shell_execute, write_stderr
-from pkg.utils.decorators import no_args, two_args, optional_int_arg
+from pkg.utils.console import write_stdout, shell_execute, write_stderr, confirm
+from pkg.utils.decorators import no_args, two_args_async, optional_int_arg, with_confirm
 from pkg.utils.umag import jboss_direct_ping, nginx_get_jboss_proxy, nginx_get_state, nginx_set_jboss_proxy
 from prompt_toolkit import print_formatted_text, HTML
-
 
 command_usage = {
     'ping': 'ping {main|reserve} [number_of_times]',
@@ -55,30 +54,33 @@ def cmd_ping_reserve(times: int = 100):
     return 0
 
 
-@two_args
-def cmd_service(service: str, action: str):
+@two_args_async
+async def cmd_service(service: str, action: str):
     svc = service.strip().lower()
     act = action.strip().lower()
     if svc not in ['jboss', 'jboss2'] or act not in ['start', 'stop']:
         print(f'Usage: {command_usage["service"]}')
-    elif result := shell_execute(f'service {svc} {act}'):
+    elif await confirm() and (result := shell_execute(f'service {svc} {act}')):
         write_stderr(f'{result}\n')
     return 0
 
 
 @no_args
+@with_confirm
 def cmd_down():
     nginx_set_jboss_proxy('UPDATING')
     return 0
 
 
 @no_args
+@with_confirm
 def cmd_up():
     nginx_set_jboss_proxy('ON')
     return 0
 
 
 @no_args
+@with_confirm
 def cmd_reserve():
     nginx_set_jboss_proxy('RESERVE')
     return 0

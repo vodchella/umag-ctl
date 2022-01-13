@@ -2,6 +2,15 @@ from functools import wraps
 from pkg.utils.console import write_stderr
 
 
+def with_confirm(func):
+    func._with_confirm = True
+
+    @wraps(func)
+    def wrapped(*positional, **named):
+        return func(*positional, **named)
+    return wrapped
+
+
 def no_args(func):
     @wraps(func)
     def wrapped(*positional, **named):
@@ -17,9 +26,9 @@ def no_args(func):
     return wrapped
 
 
-def two_args(func):
+def two_args_async(func):
     @wraps(func)
-    def wrapped(*positional, **named):
+    async def wrapped(*positional, **named):
         if len(positional):
             list_of_args = positional[0]
             if isinstance(list_of_args, list):
@@ -27,11 +36,11 @@ def two_args(func):
                 if args_count == 2:
                     first_arg = list_of_args[0]
                     second_arg = list_of_args[1]
-                    return func(first_arg, second_arg)
+                    return await func(first_arg, second_arg)
                 else:
                     write_stderr('Invalid number of arguments\n')
                     return 0
-        return func(*positional, **named)
+        return await func(*positional, **named)
     return wrapped
 
 

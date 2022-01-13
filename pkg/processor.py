@@ -1,3 +1,6 @@
+import inspect
+from typing import Callable, Union, List
+
 from pkg.commands import (
     cmd_ping_main,
     cmd_ping_reserve,
@@ -10,7 +13,7 @@ from pkg.commands import (
     cmd_service,
     command_usage,
 )
-from pkg.utils.console import write_stderr
+from pkg.utils.console import write_stderr, confirm
 
 functions = {
     'ping': {
@@ -31,17 +34,25 @@ functions = {
 }
 
 
-def parse_and_execute(text: str) -> int:
-    def call(func, level):
+async def parse_and_execute(text: str) -> int:
+    async def call_fn(func: Callable, args: List[str]) -> int:
+        if hasattr(func, '_with_confirm') and not await confirm():
+            return 0
+        if inspect.iscoroutinefunction(func):
+            return await func(args)
+        else:
+            return func(args)
+
+    async def find_and_call(func: Union[Callable, dict], level: int) -> int:
         if func:
             if callable(func):
                 args = words[level:]
-                return func(args)
+                return await call_fn(func, args)
             elif isinstance(func, dict):
                 if len(words) > level:
                     param = words[level]
                     func = func[param] if param in fn else None
-                    return call(func, level + 1)
+                    return await find_and_call(func, level + 1)
         if usage := command_usage[command] if command in command_usage else None:
             print(f'Usage: {usage}')
         else:
@@ -52,5 +63,5 @@ def parse_and_execute(text: str) -> int:
     if words:
         command = words[0]
         fn = functions[command] if command in functions else None
-        return call(fn, 1)
+        return await find_and_call(fn, 1)
     return 0
