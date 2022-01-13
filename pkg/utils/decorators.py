@@ -26,22 +26,21 @@ def no_args(func):
     return wrapped
 
 
-def two_args_async(func):
-    @wraps(func)
-    async def wrapped(*positional, **named):
-        if len(positional):
-            list_of_args = positional[0]
-            if isinstance(list_of_args, list):
-                args_count = len(list_of_args)
-                if args_count == 2:
-                    first_arg = list_of_args[0]
-                    second_arg = list_of_args[1]
-                    return await func(first_arg, second_arg)
-                else:
-                    write_stderr('Invalid number of arguments\n')
-                    return 0
-        return await func(*positional, **named)
-    return wrapped
+def with_args_async(args_count: int):
+    def decorator(func):
+        @wraps(func)
+        async def wrapped(*positional, **named):
+            if len(positional):
+                list_of_args = positional[0]
+                if isinstance(list_of_args, list):
+                    if len(list_of_args) == args_count:
+                        return await func(*list_of_args)
+                    else:
+                        write_stderr('Invalid number of arguments\n')
+                        return 0
+            return await func(*positional, **named)
+        return wrapped
+    return decorator
 
 
 def optional_int_arg(func):

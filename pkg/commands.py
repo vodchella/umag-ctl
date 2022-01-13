@@ -1,6 +1,6 @@
 from pkg.style import style
 from pkg.utils.console import write_stdout, shell_execute, write_stderr
-from pkg.utils.decorators import no_args, two_args_async, optional_int_arg, with_confirm
+from pkg.utils.decorators import no_args, with_args_async, optional_int_arg, with_confirm
 from pkg.utils.umag import jboss_direct_ping, nginx_get_jboss_proxy, nginx_get_state, nginx_set_jboss_proxy
 from pkg.widgets import confirm_dialog
 from prompt_toolkit import print_formatted_text, HTML
@@ -55,7 +55,7 @@ def cmd_ping_reserve(times: int = 100):
     return 0
 
 
-@two_args_async
+@with_args_async(args_count=2)
 async def cmd_service(service: str, action: str):
     svc = service.strip().lower()
     act = action.strip().lower()
