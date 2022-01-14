@@ -26,7 +26,7 @@ def bottom_toolbar() -> HTML:
         prepared = result.strip().lower()
         if prepared.startswith('active: active'):
             return 'ON'
-        if prepared.startswith('active: inactive'):
+        if prepared.startswith('active: inactive') or prepared.startswith('active: failed'):
             return 'OFF'
         return 'MISSING'
 
