@@ -33,7 +33,7 @@ def command(
 
                 # Check for number of arguments
                 required_params = [p for p in params if not has_default_value(p)]
-                if len(required_params) > len(list_of_args):
+                if len(required_params) > len(list_of_args) or len(params) < len(list_of_args):
                     err('Invalid number of arguments')
                     return 0
 
