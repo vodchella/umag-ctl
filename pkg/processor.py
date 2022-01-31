@@ -1,41 +1,19 @@
-import inspect
+import pkg.commands as cmds
 
-from pkg.commands import (
-    cmd_ping,
-    cmd_exit,
-    cmd_help,
-    cmd_down,
-    cmd_up,
-    cmd_reserve,
-    cmd_status,
-    cmd_service,
-    command_usage,
-)
+from inspect import iscoroutinefunction, getmembers, isfunction
+from pkg.documentation import command_usages, print_command_usage
 from pkg.utils.console import write_stderr
 from pkg.widgets import confirm_dialog
 from typing import Callable, Union, List
 
-functions = {
-    'ping':  cmd_ping,
-    'service': cmd_service,
-    'exit': cmd_exit,
-    'quit': cmd_exit,
-    'help': cmd_help,
-    'usage': cmd_help,
-    'down': cmd_down,
-    'up': cmd_up,
-    'reserve': cmd_reserve,
-    's': cmd_status,
-    'st': cmd_status,
-    'status': cmd_status,
-}
+commands = {}
 
 
 async def parse_and_execute(text: str) -> int:
     async def call_fn(func: Callable, args: List[str]) -> int:
-        if hasattr(func, '_with_confirm') and not await confirm_dialog():
+        if hasattr(func, '_with_confirm') and getattr(func, '_with_confirm') and not await confirm_dialog():
             return 0
-        if inspect.iscoroutinefunction(func):
+        if iscoroutinefunction(func):
             return await func(args)
         else:
             return func(args)
@@ -50,15 +28,30 @@ async def parse_and_execute(text: str) -> int:
                     param = words[level]
                     func = func[param] if param in fn else None
                     return await find_and_call(func, level + 1)
-        if usage := command_usage[command] if command in command_usage else None:
-            print(f'Usage: {usage}')
-        else:
+        if not print_command_usage(command):
             write_stderr('Unknown command\n')
         return 0
 
     words = text.lower().split()
     if words:
         command = words[0]
-        fn = functions[command] if command in functions else None
+        fn = commands[command] if command in commands else None
         return await find_and_call(fn, 1)
     return 0
+
+
+def _setup_command(cmd_name):
+    commands[cmd_name] = fun
+    if command_usage:
+        command_usages[cmd_name] = command_usage
+
+
+for _, fun in getmembers(cmds, isfunction):
+    if hasattr(fun, '_command_names'):
+        command_usage = getattr(fun, '_usage') if hasattr(fun, '_usage') else None
+        names = getattr(fun, '_command_names')
+        if isinstance(names, str):
+            _setup_command(names)
+        elif isinstance(names, List):
+            for n in names:
+                _setup_command(n)

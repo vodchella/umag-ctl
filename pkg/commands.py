@@ -1,6 +1,6 @@
 from pkg.style import style
 from pkg.utils.console import write_stdout, shell_execute, write_stderr
-from pkg.utils.decorators import with_confirm, command
+from pkg.utils.decorators import command
 from pkg.utils.umag import jboss_direct_ping, nginx_get_jboss_proxy, nginx_get_state, nginx_set_jboss_proxy
 from pkg.widgets import confirm_dialog
 from prompt_toolkit import print_formatted_text, HTML
@@ -11,12 +11,12 @@ command_usage = {
 }
 
 
-@command
+@command(['exit', 'quit'])
 async def cmd_exit():
     return 1
 
 
-@command
+@command(['help', 'usage'])
 async def cmd_help():
     print("""Usage:
     'down'        - switch into \"UPDATING\" state
@@ -35,53 +35,48 @@ async def cmd_help():
     return 0
 
 
-@command
+@command(
+    'ping', 'ping {main|reserve} [number_of_times]',
+    strict_args={'server': ['main', 'reserve']}
+)
 async def cmd_ping(server: str, times: int = 100):
-    srv = server.strip().lower()
-    if srv not in ['main', 'reserve']:
-        print(f'Usage: {command_usage["ping"]}')
-    else:
-        print(f'Ping {server.upper()} {times} times:')
-        port = 8080 if server == 'main' else 8081
-        for i in range(times):
-            write_stdout('+' if jboss_direct_ping(port) else 'F')
-        print()
+    print(f'Ping {server.upper()} {times} times:')
+    port = 8080 if server == 'main' else 8081
+    for i in range(times):
+        write_stdout('+' if jboss_direct_ping(port) else 'F')
+    print()
     return 0
 
 
-@command
+@command(
+    'service', 'service {jboss|jboss2} {start|stop}',
+    strict_args={'service': ['jboss', 'jboss2'], 'action': ['start', 'stop']}
+)
 async def cmd_service(service: str, action: str):
-    svc = service.strip().lower()
-    act = action.strip().lower()
-    if svc not in ['jboss', 'jboss2'] or act not in ['start', 'stop']:
-        print(f'Usage: {command_usage["service"]}')
-    elif await confirm_dialog() and (result := shell_execute(f'service {svc} {act}')):
+    if await confirm_dialog() and (result := shell_execute(f'service {service} {action}')):
         write_stderr(f'{result}\n')
     return 0
 
 
-@command
-@with_confirm
+@command('down', with_confirm=True)
 async def cmd_down():
     nginx_set_jboss_proxy('UPDATING')
     return 0
 
 
-@command
-@with_confirm
+@command('up', with_confirm=True)
 async def cmd_up():
     nginx_set_jboss_proxy('ON')
     return 0
 
 
-@command
-@with_confirm
+@command('reserve', with_confirm=True)
 async def cmd_reserve():
     nginx_set_jboss_proxy('RESERVE')
     return 0
 
 
-@command
+@command(['status', 'st', 's'])
 async def cmd_status():
     proxy = nginx_get_jboss_proxy()
     nginx_state = nginx_get_state()
