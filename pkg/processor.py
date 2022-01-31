@@ -1,9 +1,8 @@
 import pkg.commands as cmds
 
 from inspect import iscoroutinefunction, getmembers, isfunction
-from pkg.documentation import command_usages, print_command_usage
+from pkg.documentation import command_usages
 from pkg.utils.console import write_stderr
-from pkg.widgets import confirm_dialog
 from typing import Callable, Union, List
 
 commands = {}
@@ -11,8 +10,6 @@ commands = {}
 
 async def parse_and_execute(text: str) -> int:
     async def call_fn(func: Callable, args: List[str]) -> int:
-        if hasattr(func, '_with_confirm') and getattr(func, '_with_confirm') and not await confirm_dialog():
-            return 0
         if iscoroutinefunction(func):
             return await func(args)
         else:
@@ -28,8 +25,7 @@ async def parse_and_execute(text: str) -> int:
                     param = words[level]
                     func = func[param] if param in fn else None
                     return await find_and_call(func, level + 1)
-        if not print_command_usage(command):
-            write_stderr('Unknown command\n')
+        write_stderr('Unknown command\n')
         return 0
 
     words = text.lower().split()

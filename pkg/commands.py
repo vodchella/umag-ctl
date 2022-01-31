@@ -1,14 +1,9 @@
+from pkg.documentation import program_usage
 from pkg.style import style
 from pkg.utils.console import write_stdout, shell_execute, write_stderr
 from pkg.utils.decorators import command
 from pkg.utils.umag import jboss_direct_ping, nginx_get_jboss_proxy, nginx_get_state, nginx_set_jboss_proxy
-from pkg.widgets import confirm_dialog
 from prompt_toolkit import print_formatted_text, HTML
-
-command_usage = {
-    'ping': 'ping {main|reserve} [number_of_times]',
-    'service': 'service {jboss|jboss2} {start|stop}',
-}
 
 
 @command(['exit', 'quit'])
@@ -18,16 +13,7 @@ async def cmd_exit():
 
 @command(['help', 'usage'])
 async def cmd_help():
-    print("""Usage:
-    'down'        - switch into \"UPDATING\" state
-    'up'          - switch proxy to -> JBOSS1 (Main)
-    'reserve'     - switch proxy to -> JBOSS2 (Reserve)
-    'status'      - prints status ('s' or 'st' aliased)
-    'ping'        - performing N ping requests, directly into jboss, bypassing nginx
-    'service'     - start or stop jboss services
-    'help, usage' - show this help
-    'exit, quit'  - exit program
-    """)
+    print(program_usage)
     print_formatted_text(
         HTML('In case of any errors use <prompt-server-name>umag-ctl-old</prompt-server-name> command\n'),
         style=style
@@ -37,7 +23,7 @@ async def cmd_help():
 
 @command(
     'ping', 'ping {main|reserve} [number_of_times]',
-    strict_args={'server': ['main', 'reserve']}
+    strict_args={'server': ['main', 'reserve']},
 )
 async def cmd_ping(server: str, times: int = 100):
     print(f'Ping {server.upper()} {times} times:')
@@ -50,10 +36,11 @@ async def cmd_ping(server: str, times: int = 100):
 
 @command(
     'service', 'service {jboss|jboss2} {start|stop}',
-    strict_args={'service': ['jboss', 'jboss2'], 'action': ['start', 'stop']}
+    strict_args={'service': ['jboss', 'jboss2'], 'action': ['start', 'stop']},
+    with_confirm=True,
 )
 async def cmd_service(service: str, action: str):
-    if await confirm_dialog() and (result := shell_execute(f'service {service} {action}')):
+    if result := shell_execute(f'service {service} {action}'):
         write_stderr(f'{result}\n')
     return 0
 

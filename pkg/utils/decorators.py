@@ -2,6 +2,7 @@ from functools import wraps
 from pkg.documentation import print_command_usage
 from pkg.utils.console import write_stderr
 from pkg.utils.fn_inspect import get_params_from_function, has_default_value
+from pkg.widgets import confirm_dialog
 from typing import Union, List
 
 
@@ -29,19 +30,26 @@ def command(
             if len(positional):
                 params = list(get_params_from_function(func).values())
                 list_of_args = positional[0]
+
+                # Check for number of arguments
                 required_params = [p for p in params if not has_default_value(p)]
                 if len(required_params) > len(list_of_args):
                     err('Invalid number of arguments')
                     return 0
+
                 s_args = getattr(wrapped, '_strict_args') if hasattr(wrapped, '_strict_args') else {}
                 prepared_args = []
                 for i, arg in enumerate(list_of_args):
                     param = params[i]
+
+                    # Check strict argument values
                     if param.name in s_args:
                         allowed_values = s_args[param.name]
                         if arg not in allowed_values:
                             err(f'Argument #{i+1} must be one of: {", ".join(allowed_values)}')
                             return 0
+
+                    # Check for argument types
                     if issubclass(param.annotation, int):
                         try:
                             prepared_arg = int(arg)
@@ -51,6 +59,12 @@ def command(
                     else:
                         prepared_arg = arg
                     prepared_args.append(prepared_arg)
+
+                # Confirmation dialog
+                if hasattr(wrapped, '_with_confirm') and getattr(wrapped, '_with_confirm'):
+                    if not await confirm_dialog():
+                        return 0
+
                 return await func(*prepared_args)
             return await func(*positional, **named)
         return wrapped
