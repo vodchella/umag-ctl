@@ -3,28 +3,19 @@ import pkg.commands as cmds
 from inspect import iscoroutinefunction, getmembers, isfunction
 from pkg.documentation import command_usages
 from pkg.utils.console import write_stderr
-from typing import Callable, Union, List
+from typing import Callable, List
 
 commands = {}
 
 
 async def parse_and_execute(text: str) -> int:
-    async def call_fn(func: Callable, args: List[str]) -> int:
-        if iscoroutinefunction(func):
-            return await func(args)
-        else:
-            return func(args)
-
-    async def find_and_call(func: Union[Callable, dict], level: int) -> int:
-        if func:
-            if callable(func):
-                args = words[level:]
-                return await call_fn(func, args)
-            elif isinstance(func, dict):
-                if len(words) > level:
-                    param = words[level]
-                    func = func[param] if param in fn else None
-                    return await find_and_call(func, level + 1)
+    async def call(func: Callable) -> int:
+        if func and callable(func):
+            args = words[1:]
+            if iscoroutinefunction(func):
+                return await func(args)
+            else:
+                return func(args)
         write_stderr('Unknown command\n')
         return 0
 
@@ -32,7 +23,7 @@ async def parse_and_execute(text: str) -> int:
     if words:
         command = words[0]
         fn = commands[command] if command in commands else None
-        return await find_and_call(fn, 1)
+        return await call(fn)
     return 0
 
 
