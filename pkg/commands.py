@@ -1,6 +1,6 @@
 from pkg.style import style
 from pkg.utils.console import write_stdout, shell_execute, write_stderr
-from pkg.utils.decorators import no_args, with_args_async, optional_int_arg, with_confirm
+from pkg.utils.decorators import with_confirm, command
 from pkg.utils.umag import jboss_direct_ping, nginx_get_jboss_proxy, nginx_get_state, nginx_set_jboss_proxy
 from pkg.widgets import confirm_dialog
 from prompt_toolkit import print_formatted_text, HTML
@@ -11,13 +11,13 @@ command_usage = {
 }
 
 
-@no_args
-def cmd_exit():
+@command
+async def cmd_exit():
     return 1
 
 
-@no_args
-def cmd_help():
+@command
+async def cmd_help():
     print("""Usage:
     'down'        - switch into \"UPDATING\" state
     'up'          - switch proxy to -> JBOSS1 (Main)
@@ -43,19 +43,19 @@ def ping(server: str, times: int):
     print()
 
 
-@optional_int_arg
-def cmd_ping_main(times: int = 100):
+@command
+async def cmd_ping_main(times: int = 100):
     ping('main', times)
     return 0
 
 
-@optional_int_arg
-def cmd_ping_reserve(times: int = 100):
+@command
+async def cmd_ping_reserve(times: int = 100):
     ping('reserve', times)
     return 0
 
 
-@with_args_async(args_count=2)
+@command
 async def cmd_service(service: str, action: str):
     svc = service.strip().lower()
     act = action.strip().lower()
@@ -66,29 +66,29 @@ async def cmd_service(service: str, action: str):
     return 0
 
 
-@no_args
+@command
 @with_confirm
-def cmd_down():
+async def cmd_down():
     nginx_set_jboss_proxy('UPDATING')
     return 0
 
 
-@no_args
+@command
 @with_confirm
-def cmd_up():
+async def cmd_up():
     nginx_set_jboss_proxy('ON')
     return 0
 
 
-@no_args
+@command
 @with_confirm
-def cmd_reserve():
+async def cmd_reserve():
     nginx_set_jboss_proxy('RESERVE')
     return 0
 
 
-@no_args
-def cmd_status():
+@command
+async def cmd_status():
     proxy = nginx_get_jboss_proxy()
     nginx_state = nginx_get_state()
     if proxy and nginx_state:

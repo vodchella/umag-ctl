@@ -14,8 +14,8 @@ from prompt_toolkit.shortcuts import PromptSession
 
 
 async def interactive_shell():
-    cmd_help()
-    cmd_status()
+    await cmd_help()
+    await cmd_status()
     print()
 
     session = PromptSession(
