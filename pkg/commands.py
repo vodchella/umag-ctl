@@ -35,23 +35,17 @@ async def cmd_help():
     return 0
 
 
-def ping(server: str, times: int):
-    print(f'Ping {server.upper()} {times} times:')
-    port = 8080 if server == 'main' else 8081
-    for i in range(times):
-        write_stdout('+' if jboss_direct_ping(port) else 'F')
-    print()
-
-
 @command
-async def cmd_ping_main(times: int = 100):
-    ping('main', times)
-    return 0
-
-
-@command
-async def cmd_ping_reserve(times: int = 100):
-    ping('reserve', times)
+async def cmd_ping(server: str, times: int = 100):
+    srv = server.strip().lower()
+    if srv not in ['main', 'reserve']:
+        print(f'Usage: {command_usage["ping"]}')
+    else:
+        print(f'Ping {server.upper()} {times} times:')
+        port = 8080 if server == 'main' else 8081
+        for i in range(times):
+            write_stdout('+' if jboss_direct_ping(port) else 'F')
+        print()
     return 0
 
 

@@ -1,8 +1,7 @@
 import inspect
 
 from pkg.commands import (
-    cmd_ping_main,
-    cmd_ping_reserve,
+    cmd_ping,
     cmd_exit,
     cmd_help,
     cmd_down,
@@ -17,10 +16,7 @@ from pkg.widgets import confirm_dialog
 from typing import Callable, Union, List
 
 functions = {
-    'ping': {
-        'main': cmd_ping_main,
-        'reserve': cmd_ping_reserve,
-    },
+    'ping':  cmd_ping,
     'service': cmd_service,
     'exit': cmd_exit,
     'quit': cmd_exit,

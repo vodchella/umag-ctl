@@ -27,7 +27,7 @@ def command(func):
                 param = params[i]
                 if issubclass(param.annotation, int):
                     try:
-                        prepared_arg = int(list_of_args[0])
+                        prepared_arg = int(arg)
                     except ValueError:
                         write_stderr('Invalid number\n')
                         return 0
